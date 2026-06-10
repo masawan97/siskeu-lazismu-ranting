@@ -1,5 +1,5 @@
 // Gantilah string URL di bawah ini dengan Web App URL dari Deployment Google Apps Script Anda!
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxusmuoIzyksCY1mtTs_mAP9SC87JpNfz3cOR_YQhqzJJeNqIKkaTC9yEJ_ueZ5VXgV/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcp07TYzkVUYKxlh6Rr14sUeCj8-E1QVlOaTOOc6ThNIOZvAG5uv8he0oB_RMYbyhA/exec";
 
 // Login Autentikasi Internal Ranting (Ganti PIN 191212 sesuai selera)
 function checkAuth() {
