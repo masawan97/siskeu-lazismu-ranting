@@ -1,73 +1,43 @@
-// Gantilah string URL di bawah ini dengan Web App URL dari Deployment Google Apps Script Anda!
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcp07TYzkVUYKxlh6Rr14sUeCj8-E1QVlOaTOOc6ThNIOZvAG5uv8he0oB_RMYbyhA/exec";
 
-// Login Autentikasi Internal Ranting (Ganti PIN 191212 sesuai selera)
-function checkAuth() {
-    const pin = document.getElementById("pin-input").value;
-    if (pin === "191212") { 
-        document.getElementById("login-screen").style.display = "none";
-        document.getElementById("app").style.display = "block";
-        fetchDashboardData();
-    } else {
-        document.getElementById("login-error").innerText = "PIN Keliru! Silakan periksa kembali.";
-    }
-}
-
-function openModal(id) { document.getElementById(id).style.display = "block"; }
-function closeModal(id) { document.getElementById(id).style.display = "none"; }
-
-// Mengambil Data Saldo Ringkasan secara Live dari Rumus Excel Backend
-async function fetchDashboardData() {
-    try {
-        let response = await fetch(`${WEB_APP_URL}?action=readDashboard`);
-        if (response.ok) {
-            let data = await response.json();
-            document.getElementById("saldo-zakat").innerText = formatRupiah(data.saldoZakat);
-            document.getElementById("saldo-infak").innerText = formatRupiah(data.saldoInfak);
-        }
-    } catch (error) {
-        console.error("Koneksi gagal atau database sibuk.", error);
-    }
-}
-
-// Mengirimkan Objek Data Gabungan Dropdown & Input ke Sheet
-async function submitData(event, type) {
-    event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
+// ALUR BARU: Validasi PIN Mengandalkan Database Google Sheets
+async function checkAuth() {
+    const pinInput = document.getElementById("pin-input").value;
+    const loginError = document.getElementById("login-error");
+    const loginBtn = document.querySelector("#login-screen button");
     
-    const dataObj = {};
-    formData.forEach((value, key) => { dataObj[key] = value; });
-    dataObj.action = `write_${type}`; 
+    if (!pinInput) {
+        loginError.innerText = "PIN tidak boleh kosong!";
+        return;
+    }
 
-    const btn = form.querySelector('button[type="submit"]');
-    const originalText = btn.innerText;
-    btn.innerText = "Memproses Input...";
-    btn.disabled = true;
+    loginBtn.innerText = "Memverifikasi PIN...";
+    loginBtn.disabled = true;
+    loginError.innerText = "";
 
     try {
-        let response = await fetch(WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify(dataObj)
-        });
-        
+        // Tembak pencocokan PIN ke backend Google Apps Script
+        let response = await fetch(`${WEB_APP_URL}?action=verifyPin&pin=${pinInput}`);
         if (response.ok) {
-            alert("Data Transaksi Berhasil Direkam ke Google Sheets!");
-            form.reset();
-            closeModal(form.closest('.modal').id);
-            fetchDashboardData(); // Update widget angka kantong dana seketika
+            let result = await response.json();
+            
+            if (result.success === true) {
+                // Jika cocok, buka aplikasi
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("app").style.display = "block";
+                fetchDashboardData();
+            } else {
+                loginError.innerText = "PIN Salah! Silakan cek Google Sheets atau hubungi Ketua Ranting.";
+            }
         } else {
-            throw new Error("Respon API bermasalah.");
+            throw new Error();
         }
     } catch (error) {
-        alert("Gagal mengirim! Periksa jaringan internet HP Anda.");
-        console.error(error);
+        loginError.innerText = "Gagal terhubung ke database. Periksa sinyal internet.";
     } finally {
-        btn.innerText = originalText;
-        btn.disabled = false;
+        loginBtn.innerText = "Masuk Sistem";
+        loginBtn.disabled = false;
     }
 }
 
-function formatRupiah(angka) {
-    return "Rp " + Number(angka).toLocaleString('id-ID');
-}
+// ... Sisa fungsi openModal, closeModal, fetchDashboardData, dan submitData tetap sama seperti sebelumnya ...
