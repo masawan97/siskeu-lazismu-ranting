@@ -1,0 +1,144 @@
+/* Core Styling & Reset iOS/Android Flickering */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #f7f9fa;
+    color: #2c3e50;
+    font-size: 16px; /* Kunci krusial agar Safari iOS tidak auto-zoom */
+}
+
+/* Proteksi Login Overlay */
+.fullscreen-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 100%);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.login-box {
+    background: white;
+    padding: 35px 24px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    text-align: center;
+    width: 100%;
+    max-width: 360px;
+}
+
+.logo-icon { font-size: 3rem; margin-bottom: 12px; }
+.login-box h2 { color: #2e7d32; font-size: 1.5rem; font-weight: 700; margin-bottom: 6px; }
+.login-box p { color: #7f8c8d; font-size: 0.9rem; margin-bottom: 5px; }
+
+.login-box input[type="password"] {
+    width: 100%; padding: 14px; margin: 20px 0;
+    border: 2px solid #e2e8f0; border-radius: 8px;
+    font-size: 1.6rem; text-align: center; letter-spacing: 10px;
+    background-color: #f8fafc;
+}
+
+/* Navigasi Header Hijau Lazismu */
+.main-header {
+    background-color: #2e7d32;
+    color: white;
+    padding: 18px 16px;
+    position: sticky; top: 0; z-index: 50;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-content {
+    max-width: 600px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.main-header h1 { font-size: 1.25rem; font-weight: 700; }
+.sub-header { font-size: 0.8rem; opacity: 0.85; margin-top: 2px; }
+.badge-status { background: #4caf50; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+
+.container { max-width: 600px; margin: 0 auto; padding: 16px; }
+
+/* Dashboard Card */
+.dashboard-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.card { background: white; padding: 18px 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.card-zakat { border-left: 6px solid #2e7d32; }
+.card-infak { border-left: 6px solid #ff9800; }
+.card h3 { font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase; letter-spacing: 0.5px; }
+.balance-amount { font-size: 1.7rem; font-weight: 700; margin: 6px 0 2px 0; color: #1a202c; }
+.card small { font-size: 0.75rem; color: #a0aec0; }
+
+/* Tombol Akses Gampang Jempol (Min Tinggi 52px) */
+.action-section h2 { font-size: 0.95rem; margin-bottom: 12px; color: #4a5568; font-weight: 600; }
+.button-group { display: flex; flex-direction: column; gap: 12px; }
+.button-group button {
+    width: 100%; min-height: 54px; padding: 14px 16px;
+    border: none; border-radius: 10px; font-size: 1rem; font-weight: 600;
+    color: white; cursor: pointer; display: flex; align-items: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+.button-group button:active { opacity: 0.85; transform: scale(0.99); }
+.button-group .icon { margin-right: 12px; font-size: 1.2rem; }
+
+.btn-success { background-color: #2e7d32; }
+.btn-danger { background-color: #e53e3e; }
+.btn-warning { background-color: #dd6b20; }
+.btn-primary { background-color: #2e7d32; }
+
+/* Desain Form Bottom Sheet Mobile */
+.modal {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); z-index: 100;
+}
+
+.modal-content {
+    background: white; position: absolute; bottom: 0; left: 0; right: 0;
+    border-top-left-radius: 20px; border-top-right-radius: 20px;
+    padding: 24px 20px; max-height: 85vh; overflow-y: auto;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+    animation: slideUp 0.25s ease-out;
+}
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; border-bottom: 1px solid #edf2f7; padding-bottom: 12px;
+}
+.modal-header h3 { font-size: 1.1rem; color: #2d3748; }
+.close { font-size: 1.8rem; color: #a0aec0; cursor: pointer; padding: 4px; }
+
+/* Normalisasi Dropdown `<select>` Android & iOS Safari */
+label { display: block; margin: 12px 0 6px 0; font-weight: 600; font-size: 0.85rem; color: #4a5568; }
+input, select {
+    width: 100%; padding: 12px; border: 1.5px solid #cbd5e0; border-radius: 8px;
+    font-size: 1rem; color: #2d3748; background-color: #fff;
+    appearance: none; -webkit-appearance: none;
+}
+
+/* Panah Dropdown Kustom Kompatibel Semua Layar HP */
+select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>");
+    background-repeat: no-repeat; background-position: right 14px center; background-size: 16px;
+    padding-right: 40px;
+}
+
+input:focus, select:focus { outline: none; border-color: #2e7d32; box-shadow: 0 0 0 3px rgba(46,125,50,0.15); }
+.btn-block { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 700; color: white; cursor: pointer; }
+.btn-save { background-color: #2e7d32; margin-top: 24px; box-shadow: 0 4px 10px rgba(46,125,50,0.2); }
+.btn-save:disabled { background-color: #cbd5e0; cursor: not-allowed; }
+.error-msg { color: #e53e3e; font-size: 0.85rem; margin-top: 8px; font-weight: 500; }
+
+/* Penyesuaian layout otomatis jika dibuka di Tablet / Layar Desktop Menengah */
+@media (min-width: 640px) {
+    .modal-content {
+        bottom: auto; top: 50%; left: 50%; right: auto;
+        transform: translate(-50%, -50%); width: 480px;
+        border-radius: 16px; max-height: 90vh;
+    }
+}
