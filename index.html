@@ -99,15 +99,51 @@
             </div>
 
             <div id="dashboard-admin" class="tab-content" style="display:none;">
+
+                <!-- Filter Periode -->
+                <div class="card">
+                    <h3 style="color:#4a5568;font-size:0.85rem;text-transform:uppercase;margin-bottom:12px;">🗓️ Filter Periode Laporan</h3>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <div style="flex:1;min-width:130px;">
+                            <label>Dari Tanggal</label>
+                            <input type="date" id="filter-tgl-awal">
+                        </div>
+                        <div style="flex:1;min-width:130px;">
+                            <label>Sampai Tanggal</label>
+                            <input type="date" id="filter-tgl-akhir">
+                        </div>
+                    </div>
+                    <button class="btn-block btn-primary" style="margin-top:14px;" onclick="applyFilterPeriode()">Terapkan Filter</button>
+                    <button class="btn-block" style="margin-top:8px;background:#718096;color:white;border:none;border-radius:8px;padding:10px;font-weight:600;" onclick="resetFilterPeriode()">Reset (Tampilkan Semua)</button>
+                </div>
+
+                <!-- Ringkasan Laporan Periode -->
+                <div class="card" id="card-ringkasan-periode" style="display:none;">
+                    <h3 style="color:#4a5568;font-size:0.85rem;text-transform:uppercase;margin-bottom:12px;">📈 Ringkasan Periode Terpilih</h3>
+                    <div style="display:flex;flex-direction:column;gap:8px;" id="ringkasan-periode-content"></div>
+                </div>
+
+                <!-- Ekspor Excel SIM Pusat -->
                 <div class="card card-admin-panel">
-                    <h3>Panel Kontrol & Ekspor Laporan Excel</h3>
-                    <p class="info-text">Silakan unduh berkas di bawah ini untuk langsung diunggah (*import*) ke sistem SIM Keuangan Lazismu Daerah/Pusat.</p>
-                    
+                    <h3>📤 Ekspor Excel (Format SIM Pusat)</h3>
+                    <p class="info-text">Unduh berkas Excel untuk diunggah ke sistem SIM Keuangan Lazismu Daerah/Pusat.</p>
                     <div class="admin-action-grid">
-                        <button class="btn-block btn-export-excel" onclick="exportDataKeuangan('penerimaan')">📊 Ekspor Jurnal Penerimaan ZIS</button>
-                        <button class="btn-block btn-export-excel" onclick="exportDataKeuangan('penyaluran')">📋 Ekspor Jurnal Pentasharufan</button>
+                        <button class="btn-block btn-export-excel" onclick="exportDataKeuangan('penerimaan')">📊 Jurnal Penerimaan ZIS</button>
+                        <button class="btn-block btn-export-excel" onclick="exportDataKeuangan('penyaluran')">📋 Jurnal Pentasharufan</button>
+                        <button class="btn-block btn-export-excel" style="background-color:#374151;" onclick="exportDataKeuangan('operasional')">⚙️ Jurnal Operasional Amil</button>
+                        <button class="btn-block btn-export-excel" style="background-color:#1e3a5f;" onclick="exportDataKeuangan('lengkap')">📦 Ekspor Semua (1 File)</button>
                     </div>
                 </div>
+
+                <!-- Ekspor PDF Laporan Ringkasan -->
+                <div class="card">
+                    <h3>🖨️ Cetak / Ekspor PDF</h3>
+                    <p class="info-text">Buat laporan ringkasan keuangan dalam format PDF siap cetak.</p>
+                    <div class="admin-action-grid">
+                        <button class="btn-block" style="background:#c05621;color:white;border:none;border-radius:8px;padding:14px;font-weight:700;" onclick="exportLaporanPDF()">📄 Laporan Ringkasan Keuangan (PDF)</button>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
