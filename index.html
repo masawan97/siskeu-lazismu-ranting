@@ -3,72 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sistem Keuangan KL Lazismu Ranting</title>
+    <title>Sistem Ekosistem Keuangan KL Lazismu Ranting</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
-    <!-- LAYER 1: PROTEKSI PIN (MOBILE FRIENDLY) -->
     <div id="login-screen" class="fullscreen-overlay">
         <div class="login-box">
             <div class="logo-icon">🌿</div>
-            <h2>KL Lazismu Ranting</h2>
-            <p>Masukkan PIN Pengurus</p>
+            <h2>Siskeu Lazismu</h2>
+            <p>Masukkan PIN Pengurus / Pimpinan</p>
             <input type="password" id="pin-input" pattern="\d*" inputmode="numeric" placeholder="••••••" maxlength="6">
             <button class="btn-block btn-primary" onclick="checkAuth()">Masuk Sistem</button>
             <p id="login-error" class="error-msg"></p>
         </div>
     </div>
 
-    <!-- LAYER 2: UTAMA APLIKASI -->
     <div id="app" style="display: none;">
         <header class="main-header">
             <div class="header-content">
                 <div>
-                    <h1>Lazismu Ranting</h1>
-                    <p class="sub-header">Pencatatan Keuangan Digital</p>
+                    <h1 id="user-welcome">Lazismu Ranting</h1>
+                    <p class="sub-header">Konsolidasi Data Keuangan & Warga</p>
                 </div>
                 <span class="badge-status">Online</span>
             </div>
         </header>
 
         <main class="container">
-            <!-- WIDGET RINGKASAN SALDO REAL-TIME -->
-            <section class="dashboard-grid">
-                <div class="card card-zakat">
-                    <h3>Sisa Saldo Zakat</h3>
-                    <p class="balance-amount" id="saldo-zakat">Rp 0</p>
-                    <small>Zakat Maal & Zakat Fitrah</small>
-                </div>
-                <div class="card card-infak">
-                    <h3>Sisa Saldo Infak/Sedekah</h3>
-                    <p class="balance-amount" id="saldo-infak">Rp 0</p>
-                    <small>Infak Terikat, Umum & Ops</small>
-                </div>
-            </section>
+            <div class="tab-navigation">
+                <button id="tab-btn-utama" class="tab-btn active" onclick="switchTab('dashboard-utama')">Ringkasan Kas</button>
+                <button id="tab-btn-warga" class="tab-btn" onclick="switchTab('dashboard-warga')">Data Warga & Donatur</button>
+                <button id="tab-btn-admin" class="tab-btn" onclick="switchTab('dashboard-admin')" style="display:none;">Admin & Ekspor</button>
+            </div>
 
-            <!-- MENU UTAMA TOMBOL FORM -->
-            <section class="action-section">
-                <h2>Menu Transaksi Lapangan</h2>
-                <div class="button-group">
-                    <button class="btn btn-success" onclick="openModal('modal-terima')">
-                        <span class="icon">💰</span> Pemasukan ZISWAF
-                    </button>
-                    <button class="btn btn-danger" onclick="openModal('modal-salur')">
-                        <span class="icon">🤝</span> Penyaluran (Pentasharufan)
-                    </button>
-                    <button class="btn btn-warning" onclick="openModal('modal-ops')">
-                        <span class="icon">⚙️</span> Operasional Amil / ATK
-                    </button>
+            <div id="dashboard-utama" class="tab-content">
+                <section class="dashboard-grid">
+                    <div class="card card-zakat">
+                        <h3>Sisa Saldo Zakat</h3>
+                        <p class="balance-amount" id="saldo-zakat">Rp 0</p>
+                        <small>Zakat Maal & Zakat Fitrah</small>
+                    </div>
+                    <div class="card card-infak">
+                        <h3>Sisa Saldo Infak/Sedekah</h3>
+                        <p class="balance-amount" id="saldo-infak">Rp 0</p>
+                        <small>Infak Terikat, Umum & Ops Amil</small>
+                    </div>
+                </section>
+
+                <section class="pimpinan-overview">
+                    <div class="card card-stats">
+                        <h4>Muzakki/Donatur Aktif</h4>
+                        <p class="stat-number" id="total-donatur-aktif">0 Orang</p>
+                    </div>
+                    <div class="card card-stats">
+                        <h4>Total Pengeluaran Ops Ranting</h4>
+                        <p class="stat-number" id="total-ops-ranting" style="color: #e53e3e;">Rp 0</p>
+                    </div>
+                </section>
+
+                <section class="action-section" id="amil-actions">
+                    <h2>Menu Transaksi Lapangan (Amil)</h2>
+                    <div class="button-group">
+                        <button class="btn btn-success" onclick="openModal('modal-terima')">💰 Pemasukan ZISWAF</button>
+                        <button class="btn btn-danger" onclick="openModal('modal-salur')">🤝 Penyaluran (Pentasharufan)</button>
+                        <button class="btn btn-warning" onclick="openModal('modal-ops')">⚙️ Operasional Amil / ATK</button>
+                    </div>
+                </section>
+            </div>
+
+            <div id="dashboard-warga" class="tab-content" style="display:none;">
+                <div class="card">
+                    <h3>Pencarian Data Warga Muhammadiyah</h3>
+                    <input type="text" id="search-warga" placeholder="Ketik nama warga / donatur..." onkeyup="filterWargaTable()">
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-warga-muhammadiyah">
+                            <thead>
+                                <tr>
+                                    <th>ID Warga</th>
+                                    <th>Nama Warga</th>
+                                    <th>No. WA</th>
+                                    <th>Status Peran</th>
+                                    <th>Alamat RT/RW</th>
+                                </tr>
+                            </thead>
+                            <tbody id="warga-rows">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
-            </section>
+            </div>
+
+            <div id="dashboard-admin" class="tab-content" style="display:none;">
+                <div class="card card-admin-panel">
+                    <h3>Panel Kontrol & Ekspor Laporan Excel</h3>
+                    <p class="info-text">Silakan unduh berkas di bawah ini untuk langsung diunggah (*import*) ke sistem SIM Keuangan Lazismu Daerah/Pusat.</p>
+                    
+                    <div class="admin-action-grid">
+                        <button class="btn-block btn-export-excel" onclick="exportDataKeuangan('penerimaan')">📊 Ekspor Jurnal Penerimaan ZIS</button>
+                        <button class="btn-block btn-export-excel" onclick="exportDataKeuangan('penyaluran')">📋 Ekspor Jurnal Pentasharufan</button>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
-    <!-- FORM MODAL 1: PEMASUKAN ZIS -->
     <div id="modal-terima" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -78,7 +121,6 @@
             <form id="form-penerimaan" onsubmit="submitData(event, 'penerimaan')">
                 <label>Nama / ID Donatur</label>
                 <input type="text" name="id_warga" placeholder="Nama atau Kode Donatur" required>
-                
                 <label>Jenis Dana</label>
                 <select name="jenis_dana" required>
                     <option value="" disabled selected>-- Pilih Jenis Dana --</option>
@@ -88,28 +130,22 @@
                     <option value="Infak Umum">Infak Umum</option>
                     <option value="Sedekah">Sedekah</option>
                 </select>
-
                 <label>Nominal Dana (Rp)</label>
                 <input type="number" name="nominal" inputmode="numeric" placeholder="Contoh: 250000" required>
-
                 <label>Metode Pembayaran</label>
                 <select name="metode" required>
                     <option value="Tunai" selected>Tunai (Cash)</option>
                     <option value="Transfer">Transfer Bank</option>
                 </select>
-
-                <label>Keterangan Akad / Donasi</label>
+                <label>Keterangan Akad</label>
                 <input type="text" name="keterangan" placeholder="Contoh: Infak subuh hamba Allah">
-
                 <label>Petugas Penerima (Amil)</label>
                 <input type="text" name="petugas_penerima" placeholder="Nama lengkap pengurus" required>
-
                 <button type="submit" class="btn-block btn-save">Simpan Transaksi</button>
             </form>
         </div>
     </div>
 
-    <!-- FORM MODAL 2: PENYALURAN (PENTASHARUFAN) -->
     <div id="modal-salur" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -119,7 +155,6 @@
             <form id="form-penyaluran" onsubmit="submitData(event, 'penyaluran')">
                 <label>Nama / ID Penerima (Mustahik)</label>
                 <input type="text" name="id_warga_penerima" placeholder="Nama atau Kode Mustahik" required>
-
                 <label>Sumber Alokasi Dana</label>
                 <select name="jenis_dana" required>
                     <option value="" disabled selected>-- Pilih Sumber Kantong Dana --</option>
@@ -129,7 +164,6 @@
                     <option value="Infak Umum">Infak Umum</option>
                     <option value="Sedekah">Sedekah</option>
                 </select>
-
                 <label>Program Pilar Lazismu</label>
                 <select name="nama_program" required>
                     <option value="" disabled selected>-- Pilih Program Pilar --</option>
@@ -140,22 +174,17 @@
                     <option value="Pemberdayaan Ekonomi Mustahik">Pemberdayaan Ekonomi Mustahik</option>
                     <option value="Dakwah / Keislaman Ranting">Dakwah / Keislaman Ranting</option>
                 </select>
-
                 <label>Nominal Disalurkan (Rp)</label>
                 <input type="number" name="nominal" inputmode="numeric" placeholder="Contoh: 150000" required>
-
-                <label>Keterangan Tambahan</label>
+                <label>Keterangan</label>
                 <input type="text" name="keterangan" placeholder="Keterangan distribusi">
-
                 <label>Petugas Penyalur</label>
                 <input type="text" name="petugas_penyalur" placeholder="Nama lengkap petugas" required>
-
                 <button type="submit" class="btn-block btn-save">Simpan Penyaluran</button>
             </form>
         </div>
     </div>
 
-    <!-- FORM MODAL 3: OPERASIONAL AMIL -->
     <div id="modal-ops" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -172,13 +201,10 @@
                     <option value="Hak Amil Ranting (Porsi Syar'i)">Hak Amil Ranting (Porsi Syar'i)</option>
                     <option value="Lain-lain / Mendesak">Lain-lain / Mendesak</option>
                 </select>
-
                 <label>Nominal Pengeluaran (Rp)</label>
                 <input type="number" name="nominal" inputmode="numeric" placeholder="Contoh: 75000" required>
-
                 <label>Detail / Spesifikasi</label>
-                <input type="text" name="keterangan" placeholder="Contoh: Beli Buku Kas & Kwitansi Ranting" required>
-
+                <input type="text" name="keterangan" placeholder="Contoh: Beli Buku Kas Ranting" required>
                 <button type="submit" class="btn-block btn-save">Simpan Operasional</button>
             </form>
         </div>
